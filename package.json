@@ -1,0 +1,23 @@
+{
+  "name": "invoice-nudge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A small overdue invoice dashboard with Neo4j persistence and a local demo fallback.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node seed.js",
+    "test": "node --test data.test.js chat.test.js",
+    "daytona:deploy": "node daytona.mjs deploy",
+    "daytona:open": "node daytona.mjs open",
+    "daytona:stop": "node daytona.mjs stop"
+  },
+  "dependencies": {
+    "neo4j-driver": "^6.0.0"
+  },
+  "devDependencies": {
+    "@daytona/sdk": "^0.227.0"
+  }
+}

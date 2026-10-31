@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#163b35">
+<title>Invoice Nudge</title>
+<link rel="icon" href="data:,">
+<style>
+:root{--ink:#1c302c;--muted:#65756e;--green:#205e4d;--line:#e2e8e2;--paper:#fff;--bg:#f4f6f2}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:wait;opacity:.6}button:focus-visible,textarea:focus-visible{outline:3px solid #96bba4;outline-offset:3px}
+header{background:#163b35;color:#fff;padding:22px max(24px,calc((100vw - 1280px)/2));display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:12px}.logo{display:grid;place-items:center;border:1px solid #72938b;border-radius:11px;width:39px;height:39px;font-size:22px;color:#d9e8bd}
+h1{font-size:19px;letter-spacing:-.5px;margin:0}.brand p{margin:0;color:#b6cdc5;font-size:12px}.demo-pill{font-size:12px;padding:5px 10px;border:1px solid #52746b;border-radius:20px;white-space:nowrap;color:#e1ebd7}
+main{max-width:1328px;margin:auto;padding:30px 24px}.intro{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:22px}
+h2{font-size:28px;letter-spacing:-1px;line-height:1.2;margin:0 0 7px}.muted{color:var(--muted)}.intro p{margin:0}.date{font-size:12px;color:var(--muted)}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}.metric{border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:18px 20px}.metric:first-child{border-left:4px solid var(--green)}.metric-label{color:var(--muted);font-size:12px}.metric strong{display:block;font-size:28px;letter-spacing:-1px;font-weight:650;font-variant-numeric:tabular-nums}.metric small{color:var(--muted)}
+.workspace{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(350px,1fr);gap:22px;align-items:start}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}.card-head{padding:17px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px}.card-head h3{font-size:15px;margin:0}.card-head small{color:var(--muted);font-size:11px}
+table{width:100%;border-collapse:collapse;table-layout:fixed}th{text-align:left;color:var(--muted);background:#fafbf8;font-size:10px;letter-spacing:.6px;text-transform:uppercase;padding:11px 12px}th:first-child{width:37%;padding-left:20px}th:nth-child(2){width:20%}th:nth-child(3){width:15%}th:last-child{width:28%}
+td{border-top:1px solid #eef1ec;padding:18px 12px;vertical-align:top;font-size:13px}td:first-child{padding-left:20px}tr.selected td{background:#edf4ec}tr.selected td:first-child{box-shadow:inset 3px 0 var(--green)}tr:hover td{background:#f6f9f3}
+.vendor-button{border:0;padding:0;background:none;color:var(--ink);text-align:left;font-weight:600;line-height:1.45}.vendor-button::after{content:"";position:absolute;inset:0}.row{position:relative;cursor:pointer}
+.invoice-id{font-size:10px;color:var(--muted);margin:5px 0}.amount{font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}.days{font-weight:650}.high{color:#b44632}.medium{color:#9a6a24}.low{color:var(--muted)}
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:3px 8px;border-radius:5px;background:#faeee7;color:#9e4e31}.badge.contacted{background:#e9f1fa;color:#34638a}.next{font-size:11px;color:var(--muted)}
+.detail{padding:22px}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);font-weight:600}.detail h3{font-size:21px;letter-spacing:-.6px;line-height:1.3;margin:6px 0}.contact{font-size:12px;color:var(--muted)}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:20px 12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;margin:20px 0}.facts dt{font-size:11px;color:var(--muted);margin-bottom:4px}.facts dd{margin:0;font-weight:600}.facts .large{font-size:25px;letter-spacing:-.6px;font-variant-numeric:tabular-nums}.action-note{padding:12px 14px;border-radius:7px;background:#f4f6ee;font-size:12px;margin-bottom:16px}.action-note span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px}
+.primary{background:var(--green);color:#fff;border:1px solid var(--green);padding:10px 15px;border-radius:7px;font-weight:600;font-size:12px}.primary:hover{background:#174c3d}.secondary{background:#fff;border:1px solid #ced8ce;color:var(--green);padding:9px 13px;border-radius:7px;font-weight:600;font-size:12px}.button-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.draft{margin-top:20px;border-top:1px solid var(--line);padding-top:17px}.draft label{display:block;font-weight:600;font-size:13px;margin-bottom:5px}.source{font-size:11px;color:var(--muted)}textarea{display:block;resize:vertical;width:100%;min-height:235px;border:1px solid #cbd6cc;border-radius:7px;padding:12px;margin:12px 0;background:#fcfdfb;font-size:12px;line-height:1.7;color:var(--ink)}
+.history-heading{display:flex;justify-content:space-between;align-items:center;margin:25px 0 10px;font-size:13px}.history-heading h4{margin:0;font-size:13px}.history-heading span{color:var(--muted);font-size:11px}.history{list-style:none;padding:0;margin:0}.history li{position:relative;padding:4px 0 17px 20px;border-left:1px solid var(--line);margin-left:4px}.history li:before{content:"";position:absolute;width:7px;height:7px;background:#98ada0;border-radius:100%;left:-4px;top:10px}.history time{font-size:10px;color:var(--muted)}.history b{font-size:11px;margin-left:7px}.history p{font-size:12px;color:var(--muted);margin:5px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.notice{margin-bottom:18px;padding:11px 14px;border-radius:7px;background:#e4f0e5;color:#245b3f;font-size:12px}.notice.error{background:#fcebe6;color:#99432e}.empty{color:var(--muted);font-size:12px;padding:10px 0}
+footer{color:var(--muted);font-size:11px;margin:22px 0 0;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+@media(min-width:1100px){#detail{position:sticky;top:20px}}
+@media(max-width:1000px){.workspace{grid-template-columns:1fr}.detail{padding:22px}th:first-child{width:38%}th:last-child{width:27%}}
+@media(max-width:560px){header{padding:18px 16px}.brand p{font-size:10px}.demo-pill{font-size:10px}main{padding:24px 16px}h2{font-size:25px}.date{display:none}.summary{gap:7px}.metric{padding:12px 9px}.metric strong{font-size:20px}.metric-label{font-size:10px}.metric small{font-size:9px}.card-head{padding:15px}.card-head small{font-size:10px}thead{display:none}tbody,tr{display:block}.row{display:grid;grid-template-columns:1fr auto;padding:15px;gap:7px;border-top:1px solid var(--line)}td,td:first-child{display:block;border:0;padding:0!important}.row td:first-child{grid-row:span 2}.row td:nth-child(2),.row td:nth-child(3){text-align:right}.row td:last-child{grid-column:1/-1;padding-top:4px!important}.selected{background:#edf4ec;box-shadow:inset 3px 0 var(--green)}tr.selected td:first-child{box-shadow:none}tr.selected td{background:none}.row:hover td{background:none}.invoice-id{margin:3px 0}.next:before{content:"Next: "}.detail{padding:18px}.intro p{font-size:12px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><span class="logo" aria-hidden="true">↗</span><div><h1>Invoice Nudge</h1><p>A little follow-up goes a long way.</p></div></div><span class="demo-pill" id="storage-badge">Checking storage…</span></header>
+<main>
+<section class="intro"><div><h2>Overdue, under control</h2><p class="muted">Know what’s outstanding and who to follow up with next.</p></div><span class="date" id="today"></span></section>
+<div id="storage-status" class="notice" role="status" aria-live="polite">Checking database connection…</div>
+<div id="notice" role="status" aria-live="polite"></div>
+<section class="summary" aria-label="Invoice overview" id="summary"></section>
+<div class="workspace">
+<section class="card" aria-labelledby="list-title"><div class="card-head"><h3 id="list-title">Overdue invoices</h3><small>Oldest first · All amounts in USD</small></div><table><thead><tr><th scope="col">Vendor / Invoice</th><th scope="col">Amount</th><th scope="col">Overdue</th><th scope="col">Next action</th></tr></thead><tbody id="rows"><tr><td colspan="4">Loading invoices…</td></tr></tbody></table></section>
+<section class="card" id="detail" aria-label="Selected invoice"><div class="detail muted">Select an invoice to get started.</div></section>
+</div>
+<section class="card chat" aria-labelledby="chat-title" style="margin-top:22px">
+ <div class="card-head"><h3 id="chat-title">Ask about invoices</h3><small>Read-only · Live Neo4j records</small></div>
+ <div style="padding:16px 20px">
+ <div class="button-line" id="chat-examples">
+ <button class="secondary" type="button">What should I follow up on first?</button>
+ <button class="secondary" type="button">Which invoices are outstanding?</button>
+ <button class="secondary" type="button">What’s the status of invoice INV-1063?</button>
+ <button class="secondary" type="button">Show the follow-up history for Northgate</button>
+ </div>
+ <div id="chat-log" role="log" aria-live="polite" aria-label="Invoice questions and answers" style="position:relative;max-height:380px;overflow:auto;margin:14px 0;white-space:pre-wrap;overflow-wrap:anywhere"><p class="muted">Ask a question below or try “What should I follow up on first?” No invoice records are changed. Each question is independent.</p></div>
+ <form id="chat-form" style="display:flex;gap:8px;align-items:end">
+ <div style="flex:1;min-width:0"><label for="chat-input" class="source">Your invoice question</label><input id="chat-input" maxlength="500" required autocomplete="off" placeholder="What should I follow up on first?" style="width:100%;padding:11px;border:1px solid #cbd6cc;border-radius:7px;font:inherit"></div>
+ <button class="primary" id="chat-send" type="submit">Ask</button>
+ </form>
+ <p class="source">No AI provider, emails, or chat storage. Answers require a live database connection.</p>
+ </div>
+</section>
+<footer><span id="storage-footer">Checking storage…</span><span>Drafts only. This app never sends emails.</span></footer>
+</main>
+<script>
+let invoices=[],selected=null;
+const drafts=new Map(), pending=new Set(), saving=new Set();
+const $=s=>document.querySelector(s);
+const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const date=s=>new Date(s+'T12:00:00Z').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'});
+const overdueClass=n=>n>30?'high':n>14?'medium':'low';
+$('#today').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+function notify(text,error=false){$('#notice').className='notice'+(error?' error':'');$('#notice').textContent=text}
+async function refreshStorage(){
+ try{
+  const response=await fetch('/api/status');
+  if(!response.ok)throw new Error('status');
+  const storage=await response.json();
+  $('#storage-badge').textContent=storage.mode==='neo4j'?'● Neo4j connected':'● Demo mode';
+  $('#storage-status').textContent=storage.message;
+  $('#storage-status').className='notice'+(storage.mode==='demo'?' error':'');
+  $('#storage-footer').textContent=storage.persistent?'Neo4j · Changes survive server restarts.':'Demo data · Temporary changes are not synced to Neo4j.';
+ }catch{
+  $('#storage-badge').textContent='Storage status unavailable';
+  $('#storage-status').textContent='Cannot confirm storage connection. Check the server before saving.';
+ }
+}
+async function api(url,options={}){
+ const response=await fetch(url,options);
+ const result=await response.json();
+ await refreshStorage();
+ if(!response.ok)throw new Error(result.error||'Something went wrong. Please try again.');
+ return result;
+}
+function renderList(){
+ $('#summary').innerHTML=`<div class="metric"><span class="metric-label">Total outstanding</span><strong>${money(invoices.reduce((s,i)=>s+i.amount,0))}</strong><small>Across ${invoices.length} overdue invoices</small></div><div class="metric"><span class="metric-label">Needs follow-up</span><strong>${invoices.filter(i=>i.status==='Overdue').length}</strong><small>Ready for your next nudge</small></div><div class="metric"><span class="metric-label">Contacted</span><strong>${invoices.filter(i=>i.status==='Contacted').length}</strong><small>Still outstanding</small></div>`;
+ $('#rows').innerHTML=invoices.map(i=>`<tr class="row ${i.id===selected?'selected':''}" data-id="${i.id}">
+ <td><button class="vendor-button" aria-label="View ${esc(i.vendor.name)}, ${i.id}" aria-pressed="${i.id===selected}">${esc(i.vendor.name)}</button><div class="invoice-id">${i.id}</div><span class="badge ${i.status.toLowerCase()}">${i.status}</span></td>
+ <td class="amount">${money(i.amount)}</td><td class="days ${overdueClass(i.daysOverdue)}">${i.daysOverdue} days</td><td class="next">${esc(i.nextAction)}</td></tr>`).join('');
+}
+function rememberDraft(){const field=$('#draft-text');if(field&&drafts.has(selected))drafts.get(selected).text=field.value}
+function pick(id){rememberDraft();selected=id;renderList();renderDetail();if(window.innerWidth<=1000)$('#detail').scrollIntoView({behavior:'smooth',block:'start'})}
+function renderDetail(){
+ const i=invoices.find(x=>x.id===selected);if(!i)return;
+ const draft=drafts.get(i.id);
+ $('#detail').innerHTML=`<div class="detail"><div class="eyebrow">Invoice details · ${i.id}</div><h3>${esc(i.vendor.name)}</h3><div class="contact">Your contact: ${esc(i.vendor.contact)}</div>
+ <dl class="facts"><div><dt>Outstanding amount</dt><dd class="large">${money(i.amount)}</dd></div><div><dt>Days overdue</dt><dd class="large ${overdueClass(i.daysOverdue)}">${i.daysOverdue}<span style="font-size:12px;font-weight:400"> days</span></dd></div><div><dt>Due date</dt><dd>${date(i.due)}</dd></div><div><dt>Status</dt><dd><span class="badge ${i.status.toLowerCase()}">${i.status}</span></dd></div></dl>
+ <div class="action-note"><span>Suggested next action</span>${esc(i.nextAction)}</div>
+ <button class="primary" id="draft-button" ${pending.has(i.id)||saving.has(i.id)?'disabled':''}>${pending.has(i.id)?'Drafting reminder…':draft?'Regenerate reminder':'Draft reminder'}</button>
+ ${draft?`<section class="draft"><label for="draft-text">Review your reminder</label><div class="source">${esc(draft.status || 'Local template draft. No external AI service is used.')} Edit before you record contact.</div><textarea id="draft-text" maxlength="10000">${esc(draft.text)}</textarea><div class="button-line"><button class="primary" id="contact-button" ${saving.has(i.id)?'disabled':''}>${saving.has(i.id)?'Saving…':'Mark as Contacted'}</button></div><p class="source">Records this message in history. Nothing is sent automatically.</p></section>`:''}
+ <div class="history-heading"><h4>Follow-up history</h4><span>${i.reminders.length} ${i.reminders.length===1?'entry':'entries'}</span></div>
+ ${i.reminders.length?`<ol class="history">${i.reminders.slice().reverse().map(r=>`<li><time>${date(r.date)}</time><b>${esc(r.kind)}</b><p>${esc(r.text)}</p></li>`).join('')}</ol>`:'<div class="empty">No follow-ups yet. Start with a friendly reminder.</div>'}</div>`;
+ $('#draft-button').onclick=doDraft;
+ if($('#contact-button'))$('#contact-button').onclick=markContacted;
+}
+async function doDraft(){
+ const id=selected;if(pending.has(id))return;
+ rememberDraft();pending.add(id);renderDetail();
+ try{
+  const draft=await api(`/api/invoices/${id}/draft`,{method:'POST'});
+  drafts.set(id,draft);
+ }catch(error){notify('Could not draft a reminder. '+error.message,true)}
+ finally{pending.delete(id);if(selected===id)renderDetail()}
+}
+async function markContacted(){
+ const id=selected,text=$('#draft-text').value.trim();if(saving.has(id))return;
+ if(!text){notify('Please write a reminder before marking this invoice as contacted.',true);return}
+ rememberDraft();saving.add(id);renderDetail();
+ try{
+  const updated=await api(`/api/invoices/${id}/contacted`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
+  invoices=invoices.map(i=>i.id===id?updated:i);drafts.delete(id);renderList();
+  notify(`${id} marked as Contacted. The full reminder is saved in follow-up history. No email was sent.`);
+ }catch(error){notify('Could not save contact. '+error.message,true)}
+ finally{saving.delete(id);if(selected===id)renderDetail()}
+}
+$('#rows').addEventListener('click',event=>{const row=event.target.closest('[data-id]');if(row)pick(row.dataset.id)});
+async function load(){
+ try{invoices=await api('/api/invoices');selected=invoices[0]?.id;renderList();renderDetail()}
+ catch(error){$('#rows').innerHTML='<tr><td colspan="4">Invoices could not be loaded. Refresh to try again.</td></tr>';notify(error.message,true)}
+}
+let chatBusy=false;
+function chatMessage(label,text){
+ const entry=document.createElement('div');entry.style.cssText='padding:12px;border:1px solid var(--line);border-radius:8px;margin:8px 0';
+ const title=document.createElement('strong');title.textContent=label;
+ const content=document.createElement('div');content.textContent=text;content.style.marginTop='5px';
+ entry.append(title,content);$('#chat-log').append(entry);
+ while($('#chat-log').children.length>12)$('#chat-log').firstElementChild.remove();
+ $('#chat-log').scrollTop=entry.offsetTop-$('#chat-log').offsetTop;
+}
+async function askInvoices(question){
+ if(chatBusy||!question.trim())return;
+ chatBusy=true;$('#chat-send').disabled=true;$('#chat-send').textContent='Checking…';
+ $('#chat-examples').querySelectorAll('button').forEach(b=>b.disabled=true);
+ chatMessage('You',question);$('#chat-input').value='';
+ try{
+  const result=await api('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:question}),signal:AbortSignal.timeout(15000)});
+  chatMessage(result.source==='neo4j'?'Invoice Nudge · Neo4j':'Invoice Nudge',result.answer);
+ }catch{chatMessage('Invoice Nudge','Could not verify invoice facts right now. Please check the connection and try again.');}
+ finally{chatBusy=false;$('#chat-send').disabled=false;$('#chat-send').textContent='Ask';$('#chat-examples').querySelectorAll('button').forEach(b=>b.disabled=false);}
+}
+$('#chat-form').addEventListener('submit',event=>{event.preventDefault();askInvoices($('#chat-input').value)});
+$('#chat-examples').addEventListener('click',event=>{if(event.target.tagName==='BUTTON')askInvoices(event.target.textContent)});
+load();
+</script>
+</body>
+</html>
