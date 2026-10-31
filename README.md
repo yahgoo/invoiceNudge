@@ -2,6 +2,10 @@
 
 A one-page overdue invoice dashboard using Node.js 22+, plain browser JavaScript, and the official Neo4j JavaScript driver. Reminders use a deterministic local template. There is no AI inference or email sending.
 
+## Demo video
+
+[Watch the Invoice Nudge product demo on YouTube](https://youtu.be/aLge6YPsQs0)
+
 ## Install and run
 
 ```sh
