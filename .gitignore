@@ -9,3 +9,13 @@ credentials/
 *.key
 *.log
 .daytona/
+
+# Generated videos, media, and build artifacts
+*.mp4
+*.mov
+*.webm
+*.wav
+*.mp3
+videos/
+dist/
+coverage/
